@@ -36,7 +36,7 @@ export default {
                     },
                 })
                 .then((response) => {
-                    window.location.hash = "/user-list";
+                    this.$router.push("/user-list");
                     console.log("success");
                 })
                 .catch((err) => {
@@ -51,7 +51,7 @@ export default {
         <div class="flex justify-between">
             <h1 class="text-start text-3xl font-semibold text-slate-800">Add New User</h1>
             <div class="createButton">
-                <a href="#/user-list" class="btn btn-active bg-indigo-800 text-white"> See user list </a>
+                <a href="/user-list" class="btn btn-active bg-indigo-800 text-white"> See user list </a>
             </div>
         </div>
         <form class="form-add flex gap-5">
