@@ -2,7 +2,14 @@
 export default {
     methods: {
         changeLocation() {
-            window.location.hash = "/";
+            // if user is not logged in, redirect to login page
+            if (localStorage.getItem("token") === null) {
+                this.$router.push("/login");
+            }
+            // if user is logged in, redirect to home page
+            else {
+                this.$router.push("/");
+            }
         },
     },
 };
