@@ -84,14 +84,14 @@ export default {
         <div class="flex justify-between">
             <h1 class="text-start text-3xl font-semibold text-slate-800">User List</h1>
             <div class="createButton">
-                <a href="#/add-user" class="btn btn-active bg-indigo-800 text-white"> Add a New User </a>
+                <a href="/add-user" class="btn btn-active bg-indigo-800 text-white"> Add a New User </a>
             </div>
         </div>
         <div class="search flex justify-end">
             <div class="form-control">
                 <div class="input-group">
                     <input
-                        @change="
+                        @keyup="
                             (e) => {
                                 this.querySearchInput = e.target.value;
                                 handleSearch(this.querySearchInput);
@@ -150,7 +150,7 @@ export default {
                             <td>Active</td>
                             <th>
                                 <div class="flex gap-3">
-                                    <a :href="`#/edit-user/${user._id || user.id}`" class="btn btn-outline btn-success btn-xs"> edit </a>
+                                    <a :href="`/edit-user?id=${user._id || user.id}`" class="btn btn-outline btn-success btn-xs"> edit </a>
                                     <label @click="this.selectedId = user._id || user.id" for="my-modal-4" class="btn btn-outline modal-button btn-error btn-xs"> delete </label>
                                 </div>
                             </th>
@@ -167,7 +167,6 @@ export default {
                             </label>
                         </tr>
                     </tbody>
-
                     <tbody v-else>
                         <tr class="w-full font-semibold text-xl align-middle text-center">
                             <td colspan="7">Loading...</td>
