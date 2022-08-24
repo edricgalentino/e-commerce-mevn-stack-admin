@@ -1,45 +1,4 @@
 <script>
-// handle login
-// const handleLogin = (username, password) => {
-//     console.log(username, password);
-
-//     if (username === "") {
-//         return (this.error = "Username is required");
-//     } else if (password === "") {
-//         return (this.error = "Password is required");
-//     } else if (username.length > 20) {
-//         return (this.error = "Username is too long");
-//     } else if (password.length < 8) {
-//         return (this.error = "Password must be at least 8 characters");
-//     }
-//     this.error = "";
-//     console.log(this.error);
-//     // // send a request to the server
-//     // const xhr = new XMLHttpRequest();
-//     // xhr.open("POST", "/login");
-//     // xhr.setRequestHeader("Content-Type", "application/json");
-//     // xhr.send(
-//     //     JSON.stringify({
-//     //         username: username,
-//     //         password: password,
-//     //     })
-//     // );
-//     // // handle response
-//     // xhr.onload = function () {
-//     //     if (xhr.status === 200) {
-//     //         // login successful
-//     //         const response = JSON.parse(xhr.responseText);
-//     //         // save token to local storage
-//     //         localStorage.setItem("token", response.token);
-//     //         // redirect to home page
-//     //         window.location.hash = "/";
-//     //     } else {
-//     //         // login failed
-//     //         alert("Login failed");
-//     //     }
-//     // };
-// };
-
 import axios from "axios";
 
 export default {
@@ -73,7 +32,7 @@ export default {
                     // save token to local storage
                     localStorage.setItem("token", response.data.accessToken);
                     // redirect to home page
-                    window.location.hash = "/";
+                    this.$router.push("/");
                 })
                 .catch((error) => {
                     this.error = error.response.data?.message;
@@ -93,7 +52,7 @@ export default {
                     <input type="email" placeholder="Username" v-model="username" class="input input-bordered w-full" />
                 </div>
                 <div class="form-control w-full">
-                    <input type="password" placeholder="Password" v-model="password" class="input input-bordered w-full" />
+                    <input @change="handleLogin()" type="password" placeholder="Password" v-model="password" class="input input-bordered w-full" />
                 </div>
                 <button type="button" @click="handleLogin()" class="btn bg-indigo-800 hover:bg-indigo-900 text-white">Login</button>
                 <div v-if="error">
@@ -106,9 +65,9 @@ export default {
                         </div>
                     </div>
                 </div>
-                <div class="flex flex-col items-start gap-3">
-                    <a href="#/" class="text-lg underline"> Forgot your password? </a>
-                </div>
+                <!-- <div class="flex flex-col items-start gap-3">
+                    <a href="/" class="text-lg underline"> Forgot your password? </a>
+                </div> -->
             </form>
         </div>
     </div>
