@@ -13,7 +13,7 @@ export default {
     methods: {
         handleLogout() {
             localStorage.removeItem("token");
-            window.location.hash = "/login";
+            this.$router.push("/login");
         },
         toggleMenu() {
             this.isMenuOpen = !this.isMenuOpen;
