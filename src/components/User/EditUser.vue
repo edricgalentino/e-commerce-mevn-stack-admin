@@ -21,6 +21,7 @@ export default {
             previewImage: null,
             progress: 0,
             isEnableToUpdate: true,
+            imagePlaceholder: null,
             message: "",
         };
     },
@@ -30,14 +31,14 @@ export default {
     methods: {
         selectImage() {
             this.currentImage = this.$refs.file.files.item(0);
-            // this.form.img = this.currentImage;
+            this.form.img = this.currentImage;
             this.previewImage = URL.createObjectURL(this.currentImage);
             this.message = "";
         },
         async upload() {
             this.message = "Uploading, please wait...";
             this.isEnableToUpdate = false;
-            await UploadService.upload(this.currentImage)
+            await UploadService.uploadUser(this.currentImage)
                 .then((response) => {
                     this.form.img = response.data;
                     this.message = response.data.message;
@@ -66,6 +67,7 @@ export default {
                 .then((response) => {
                     this.user = response.data;
                     this.form = response.data;
+                    this.imagePlaceholder = response.data.img;
                 })
                 .catch((error) => {
                     console.log(error);
@@ -73,6 +75,9 @@ export default {
         },
         async handleUpdateUser() {
             await this.upload();
+            if (this.message.includes("must")) {
+                this.form.img = this.imagePlaceholder;
+            }
             const res = await API.put(`/user/${this.getIdFromUrl()}`, this.form, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
             })
