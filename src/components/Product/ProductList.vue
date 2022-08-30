@@ -1,5 +1,5 @@
 <script>
-import axios from "axios";
+import { API } from "../../api";
 export default {
     data() {
         return {
@@ -20,12 +20,11 @@ export default {
     methods: {
         async getProducts() {
             this.isLoading = true;
-            const response = await axios
-                .get("http://localhost:5000/product", {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                })
+            const response = await API.get("/product", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
                 .then((response) => {
                     this.products = response.data;
                     this.isLoading = false;
@@ -37,12 +36,11 @@ export default {
                 });
         },
         async handleDelete(id) {
-            const response = await axios
-                .delete(`http://localhost:5000/product/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                })
+            const response = await API.delete(`/product/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
                 .then((response) => {
                     this.getProducts();
                 })
@@ -54,12 +52,11 @@ export default {
         },
         async handleSearch(q) {
             this.isLoading = true;
-            const response = await axios
-                .post(`http://localhost:5000/product/search?q=${q}`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                })
+            const response = await API.post(`/product/search?q=${q}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
                 .then((response) => {
                     this.isLoading = false;
                     this.isProductFound = response.data.isFind;
