@@ -34,7 +34,7 @@ export default {
         async upload() {
             this.message = "Uploading, please wait...";
             this.isEnableToUpdate = false;
-            await UploadService.upload(this.currentImage)
+            await UploadService.uploadUser(this.currentImage)
                 .then((response) => {
                     this.form.img = response.data;
                     this.message = response.data.message;
