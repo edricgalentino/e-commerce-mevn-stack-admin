@@ -128,10 +128,7 @@ export default {
                                 <div class="flex items-center space-x-3">
                                     <div class="avatar">
                                         <div class="mask mask-squircle w-12 h-12">
-                                            <img
-                                                :src="product?.img || `https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1331&q=80`"
-                                                alt="Avatar Tailwind CSS Component"
-                                            />
+                                            <img :src="product?.img?.data?.filename !== undefined ? `http://localhost:5000/product/image/${product?.img?.data?.filename}` : product?.img" alt="Avatar Tailwind CSS Component" />
                                         </div>
                                     </div>
                                     <div>
