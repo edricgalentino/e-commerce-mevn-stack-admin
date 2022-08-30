@@ -1,4 +1,19 @@
-<script></script>
+<script>
+export default {
+    data() {
+        return {
+            error: "",
+            products: [],
+            querySearchInput: "",
+            isLoading: false,
+            selectedId: null,
+            isProductFound: true,
+
+            fruits: ["Mangoo", "Apple", "Orange", "Melon", "Pineapple", "Lecy", "Blueberry"],
+        };
+    },
+};
+</script>
 <template>
     <div class="flex flex-col w-full h-full gap-7 p-8 pb-16 bg-white">
         <div class="flex justify-between">
@@ -31,19 +46,19 @@
                     <label class="label">
                         <span class="label-text text-lg font-semibold"> Category <span class="text-xs ml-1 font-thin">(Choose or create a new one)</span> </span>
                     </label>
-                    <Creatable isMulti placeholder="Select or write new category" />
+                    <v-select multiple :options="fruits" taggable placeholder="Select or write new category"></v-select>
                 </div>
                 <div class="form-control w-full">
                     <label class="label">
                         <span class="label-text text-lg font-semibold"> Color <span class="text-xs ml-1 font-thin">(Choose or create a new one)</span> </span>
                     </label>
-                    <Creatable isMulti placeholder="Select or write new color" />
+                    <v-select multiple :options="fruits" taggable placeholder="Select or write new color"></v-select>
                 </div>
                 <div class="form-control w-full">
                     <label class="label">
                         <span class="label-text text-lg font-semibold"> Size <span class="text-xs ml-1 font-thin">(Choose or create a new one)</span> </span>
                     </label>
-                    <Creatable isMulti placeholder="Select or write new size" />
+                    <v-select multiple :options="fruits" taggable placeholder="Select or write new size"></v-select>
                 </div>
                 <div class="form-control w-full max-w-xs">
                     <label class="label">
