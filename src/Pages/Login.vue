@@ -1,5 +1,5 @@
 <script>
-import axios from "axios";
+import { API } from "../api";
 
 export default {
     data() {
@@ -23,11 +23,10 @@ export default {
             }
             this.error = "";
 
-            await axios
-                .post("http://localhost:5000/auth/login", {
-                    username: this.username,
-                    password: this.password,
-                })
+            await API.post("/auth/login", {
+                username: this.username,
+                password: this.password,
+            })
                 .then((response) => {
                     // save token to local storage
                     localStorage.setItem("token", response.data.accessToken);
