@@ -1,5 +1,6 @@
 <script>
-import axios from "axios";
+import { API } from "../../api";
+import UploadService from "../../service/UploadFilesService";
 export default {
     data() {
         return {
@@ -15,12 +16,39 @@ export default {
                 isAdmin: true,
             },
             error: "",
+            // img uploader data
+            currentImage: null,
+            previewImage: null,
+            progress: 0,
+            isEnableToUpdate: true,
+            message: "",
         };
     },
     async mounted() {
         await this.fetchDetailDataUser();
     },
     methods: {
+        selectImage() {
+            this.currentImage = this.$refs.file.files.item(0);
+            // this.form.img = this.currentImage;
+            this.previewImage = URL.createObjectURL(this.currentImage);
+            this.message = "";
+        },
+        async upload() {
+            this.message = "Uploading, please wait...";
+            this.isEnableToUpdate = false;
+            await UploadService.upload(this.currentImage)
+                .then((response) => {
+                    this.form.img = response.data;
+                    this.message = response.data.message;
+                    this.isEnableToUpdate = true;
+                })
+                .catch((err) => {
+                    this.progress = 0;
+                    this.message = "Could not upload the image! " + err;
+                    this.currentImage = undefined;
+                });
+        },
         getIdFromUrl() {
             const params = new Proxy(new URLSearchParams(window.location.search), {
                 get: (searchParams, prop) => searchParams.get(prop),
@@ -29,13 +57,12 @@ export default {
         },
         // get user id from url
         async fetchDetailDataUser() {
-            const res = await axios
-                .get(`http://localhost:5000/user/find-user/${this.getIdFromUrl()}`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        "Content-Type": "application/json",
-                    },
-                })
+            const res = await API.get(`/user/find-user/${this.getIdFromUrl()}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                },
+            })
                 .then((response) => {
                     this.user = response.data;
                     this.form = response.data;
@@ -45,16 +72,17 @@ export default {
                 });
         },
         async handleUpdateUser() {
-            const res = await axios
-                .put(`http://localhost:5000/user/${this.getIdFromUrl()}`, this.form, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
-                })
+            await this.upload();
+            const res = await API.put(`/user/${this.getIdFromUrl()}`, this.form, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+            })
                 .then((res) => {
                     console.log("success update user");
                     this.$router.push("/user-list");
                 })
                 .catch((err) => {
                     console.log(err, "error update user");
+                    this.error = err.response.data.message;
                 });
         },
     },
@@ -213,8 +241,11 @@ export default {
                     </div>
                     <div class="container-input">
                         <div class="flex justify-center items-center w-full my-3">
-                            <label for="dropzone-file" class="flex flex-col justify-center items-center w-full bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-100">
-                                <div class="flex flex-col justify-center items-center pt-5 pb-6 w-full px-12">
+                            <label for="dropzone-file" class="flex flex-col justify-center items-center w-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-100">
+                                <div v-if="user.img?.data?.filename ? `http://localhost:5000/user/image/${user.img?.data?.filename}` : previewImage" class="h-40 max-h-40 w-full flex justify-center items-center">
+                                    <img class="preview my-3 w-full h-full max-h-40 object-cover rounded-lg" :src="user.img?.data?.filename ? `http://localhost:5000/user/image/${user.img?.data?.filename}` : previewImage" alt="" />
+                                </div>
+                                <div v-else class="flex flex-col justify-center items-center pt-5 pb-6 w-full px-12">
                                     <svg aria-hidden="true" class="mb-3 w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                     </svg>
@@ -223,13 +254,39 @@ export default {
                                     </p>
                                     <p class="text-xs text-gray-500 text-center dark:text-gray-400">PNG, JPG or JPEG (MAX. 2 mb)</p>
                                 </div>
-                                <input id="dropzone-file" type="file" class="hidden" />
+                                <input
+                                    id="dropzone-file"
+                                    accept="image/*"
+                                    ref="file"
+                                    @change="
+                                        () => {
+                                            selectImage();
+                                        }
+                                    "
+                                    type="file"
+                                    class="hidden"
+                                />
                             </label>
                         </div>
                     </div>
                 </div>
+                <div v-if="message" class="alert alert-secondary" role="alert">
+                    {{ message }}
+                </div>
             </div>
         </form>
-        <button @click="handleUpdateUser()" type="button" class="btn bg-indigo-800 hover:bg-indigo-900 text-white -mt-3">Update user</button>
+        <div v-if="error">
+            <div class="alert alert-error shadow-lg">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{{ error }}</span>
+                </div>
+            </div>
+        </div>
+        <div v-bind="isEnableToUpdate" :class="`${!isEnableToUpdate ? 'cursor-not-allowed' : ''} w-full h-full`">
+            <button @click="handleUpdateUser()" type="button" v-bind="isEnableToUpdate" :class="`${!isEnableToUpdate ? 'pointer-events-none' : ''} btn bg-indigo-800 w-full h-full hover:bg-indigo-900 text-white`">Update user</button>
+        </div>
     </div>
 </template>
