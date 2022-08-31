@@ -4,11 +4,12 @@ export default {
         changeLocation() {
             // if user is not logged in, redirect to login page
             if (localStorage.getItem("token") === null) {
-                this.$router.push("/login");
+                this.$router.push("/auth/login");
             }
             // if user is logged in, redirect to home page
             else {
-                this.$router.push("/");
+                // redirect to page before this
+                this.$router.go(-1);
             }
         },
     },
