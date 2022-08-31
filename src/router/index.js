@@ -15,6 +15,9 @@ const routes = [
         path: "/",
         name: "Home",
         component: Home,
+        meta: {
+            requiresAuth: true,
+        },
         children: [
             {
                 path: "/",
@@ -46,24 +49,29 @@ const routes = [
             },
         ],
     },
-    {
-        path: "/login",
-        name: "Login",
-        component: Login,
-    },
     // {
-    //     path: "/auth",
-    //     name: "auth",
-    //     children: [
-    //         {
-    //             path: "login",
-    //             component: Login,
-    //         },
-    //         {
-    //             path: "logout",
-    //         },
-    //     ],
+    //     path: "/login",
+    //     name: "Login",
+    //     component: Login,
     // },
+    {
+        path: "/auth",
+        name: "auth",
+        redirect: "/auth/login",
+
+        children: [
+            {
+                path: "login",
+                component: Login,
+                meta: {
+                    hideForAuth: true,
+                },
+            },
+            {
+                path: "logout",
+            },
+        ],
+    },
     {
         path: "/:catchAll(.*)",
         component: NotFound,
@@ -73,6 +81,29 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(),
     routes,
+});
+
+// to either force user to login when they are not logged in or to force them to stay away from login page when they are already logged in
+router.beforeEach((to, from, next) => {
+    if (to.matched.some((record) => record.meta.requiresAuth)) {
+        if (localStorage.getItem("token") == null) {
+            next({
+                path: "/auth/login",
+            });
+        } else {
+            next();
+        }
+    } else if (to.matched.some((record) => record.meta.hideForAuth)) {
+        if (localStorage.getItem("token") !== null) {
+            next({
+                path: "/",
+            });
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
 });
 
 export default router;
