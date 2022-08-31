@@ -16,7 +16,7 @@ export default {
     methods: {
         handleLogout() {
             localStorage.removeItem("token");
-            this.$router.push("/login");
+            this.$router.push("/auth/login");
         },
         toggleMenu() {
             this.isMenuOpen = !this.isMenuOpen;
